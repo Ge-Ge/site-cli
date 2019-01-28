@@ -1,0 +1,39 @@
+{
+  "name": "site-cli",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "site": "./index.js"
+  },
+  "scripts": {
+    "test": "mocha",
+    "init": "node ./src/init.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ge-Ge/site-cli.git"
+  },
+  "keywords": [
+    "docker"
+  ],
+  "author": "ge-ge",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ge-Ge/site-cli/issues"
+  },
+  "homepage": "https://github.com/Ge-Ge/site-cli#readme",
+  "dependencies": {
+    "commander": "^2.19.0",
+    "dotenv": "^6.2.0",
+    "fs-extra": "^7.0.1",
+    "inquirer": "^6.2.1",
+    "json-stable-stringify-without-jsonify": "^1.0.1",
+    "simple-git": "^1.107.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.12.1",
+    "mocha": "^5.2.0",
+    "power-assert": "^1.6.1"
+  }
+}
