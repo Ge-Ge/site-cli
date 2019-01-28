@@ -7,8 +7,7 @@
     "site": "./index.js"
   },
   "scripts": {
-    "test": "mocha",
-    "init": "node ./src/init.js"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",

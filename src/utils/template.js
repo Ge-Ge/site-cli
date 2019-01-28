@@ -10,12 +10,15 @@ const simpleGit = require('simple-git/promise.js');
  */
 class Template {
   static async clone (name, to = config.SITE_DOWNLOAD) {
-    const flag = await fs.access(to, fs.constants.F_OK);
-    if (!flag) fs.mkdirSync(config.SITE_DOWNLOAD, { recursive: true });
+    try {
+      fs.accessSync(to, fs.constants.F_OK);
+    } catch (e) {
+      fs.mkdirSync(config.SITE_DOWNLOAD, { recursive: true });
+    }
     if (Template.exists(name, to)) return simpleGit(to).pull('origin', config.GIT_BRANCH);
     return simpleGit(to).clone(`${config.GIT_REMOTE}/${config.GIT_USER}/${name}.git`, ['-b', config.GIT_BRANCH]);
   }
-  // TODO 判读仓库是否存在
+
   static pull (name, to = config.SITE_DOWNLOAD) {
     return simpleGit(to).pull(`${config.GIT_REMOTE}/${config.GIT_USER}/${name}.git`);
   }
@@ -27,8 +30,11 @@ class Template {
 
   static async exists (name, to = config.SITE_DOWNLOAD) {
     const repoPath = path.join(to, name);
-    const flag = await fs.access(repoPath, fs.constants.F_OK);
-    if (!flag) return false;
+    try {
+      fs.accessSync(repoPath, fs.constants.F_OK);
+    } catch (e) {
+      return false;
+    }
     return simpleGit(repoPath).checkIsRepo();
   }
 

@@ -13,12 +13,13 @@ class Command {
     const promises = templateList.map(async (key) => {
       return Template.add(key, cwd);
     });
-    Promise.all(promises).then(res => {
-      const envConfig = makeConfig.getEnvs(res);
+    return Promise.all(promises).then(res => {
+      const envConfig = makeConfig.getEnvs(res.map(item => path.join(item, '.env')));
       makeConfig.wEnv(envConfig, path.join(cwd, '.env'));
       makeConfig.wSite({
         template: templateList
       }, path.join(cwd, '.site.js'), true);
+      return res;
     });
   }
 
@@ -31,12 +32,13 @@ class Command {
     const promises = templateList.map(async (key) => {
       return Template.add(key, cwd);
     });
-    Promise.all(promises).then(res => {
+    return Promise.all(promises).then(res => {
       const envConfig = makeConfig.getEnvs(res);
       makeConfig.wEnv(envConfig, path.join(cwd, '.env'));
       makeConfig.wSite({
         template: templateList
       }, path.join(cwd, '.site.js'), false);
+      return res;
     });
   }
 

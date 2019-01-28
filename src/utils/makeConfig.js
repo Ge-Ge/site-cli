@@ -13,15 +13,21 @@ class Conf {
   }
 
   static rSite (filePath = '.site.js') {
-    const flag = fs.accessSync(filePath, fs.constants.F_OK);
-    if (!flag) return null;
+    try {
+      fs.accessSync(path, fs.constants.F_OK);
+    } catch (error) {
+      return null;
+    }
     return require(filePath);
   }
 
-  static async rEnv (path = '.env') {
-    const flag = await fs.access(path, fs.constants.F_OK);
-    if (!flag) return null;
-    return require('dotenv').config({ path });
+  static rEnv (path = '.env') {
+    try {
+      fs.accessSync(path, fs.constants.F_OK);
+    } catch (error) {
+      return null;
+    }
+    return require('dotenv').config({path});
   }
   static wEnv (config, filePath = '.env') {
     let str = '';
@@ -33,7 +39,7 @@ class Conf {
   static getEnvs (envPathList = []) {
     let envConfig = {};
     for (let dirPath of envPathList) {
-      const obj = Conf.rEnv(path.join(dirPath, '.env'));
+      const obj = Conf.rEnv(dirPath);
       if (obj && obj.parsed) Object.assign(envConfig, obj.parsed);
     }
     return envConfig;
