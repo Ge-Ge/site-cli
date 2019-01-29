@@ -1,6 +1,5 @@
 'use strict';
 const inquirer = require('inquirer');
-const command = require('./command.js');
 class Prompt {
   static add () {
     const questions = [
@@ -30,8 +29,8 @@ class Prompt {
         }
       }
     ];
-    inquirer.prompt(questions).then(answers => {
-      command.add(answers.template);
+    return inquirer.prompt(questions).then(answers => {
+      return answers.template;
     });
   }
   static init () {
@@ -64,12 +63,12 @@ class Prompt {
         }
       },
     ];
-    inquirer.prompt(questions).then(answers => {
+    return inquirer.prompt(questions).then(answers => {
       const list = [];
       for (let key in answers) {
         if (answers.hasOwnProperty(key)) list.push(answers[key]);
       }
-      command.init(list);
+      return list;
     });
   }
 }

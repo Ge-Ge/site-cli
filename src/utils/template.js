@@ -37,7 +37,7 @@ class Template {
     }
     return simpleGit(repoPath).checkIsRepo();
   }
-
+  // TODO 如果模板存在，则请除之前的模板
   static async add (templateName, cwd = process.cwd) {
     const projectName = templateName;
     const toDir = path.join(cwd, projectName);

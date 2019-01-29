@@ -1,12 +1,14 @@
 const fs = require('fs-extra');
 const stringify = require('json-stable-stringify-without-jsonify');
-const path = require('path');
+const union = require('lodash.union');
+const importFresh = require('import-fresh');
+// const path = require('path');
 
 class Conf {
   static wSite (config, filePath = '.site.js', cover = true) {
     if (!cover) {
       const oldConfig = Conf.rSite(filePath);
-      if (oldConfig && oldConfig.template && config.template) config.template = [...config.template, ...oldConfig.template];
+      if (oldConfig && oldConfig.template && config.template) config.template = union(oldConfig.template, config.template);
     }
     const content = `module.exports = ${stringify(config, { space: 4 })};`;
     fs.writeFileSync(filePath, content, 'utf8');
@@ -14,32 +16,35 @@ class Conf {
 
   static rSite (filePath = '.site.js') {
     try {
-      fs.accessSync(path, fs.constants.F_OK);
+      fs.accessSync(filePath, fs.constants.F_OK);
     } catch (error) {
       return null;
     }
-    return require(filePath);
+    return importFresh(filePath);
   }
 
-  static rEnv (path = '.env') {
+  static rEnv (filePath = '.env') {
     try {
-      fs.accessSync(path, fs.constants.F_OK);
+      fs.accessSync(filePath, fs.constants.F_OK);
     } catch (error) {
       return null;
     }
-    return require('dotenv').config({path});
+    return require('dotenv').config({ path: filePath });
   }
-  static wEnv (config, filePath = '.env') {
+
+  static wEnv (config, filePath = '.env', cover = true) {
     let str = '';
     for (let key in config) {
       str += `${key}=${config[key]}\n`;
     }
-    fs.appendFileSync(filePath, str, 'utf8');
+    if (!cover) fs.appendFileSync(filePath, str, 'utf8');
+    else fs.writeFileSync(filePath, str, 'utf8');
   }
+
   static getEnvs (envPathList = []) {
     let envConfig = {};
-    for (let dirPath of envPathList) {
-      const obj = Conf.rEnv(dirPath);
+    for (let filePath of envPathList) {
+      const obj = Conf.rEnv(filePath);
       if (obj && obj.parsed) Object.assign(envConfig, obj.parsed);
     }
     return envConfig;
