@@ -10,17 +10,20 @@ const simpleGit = require('simple-git/promise.js');
  */
 class Template {
   static async clone (name, to = config.SITE_DOWNLOAD) {
+    const target = path.join(to, name);
     try {
-      fs.accessSync(to, fs.constants.F_OK);
+      fs.accessSync(target, fs.constants.F_OK);
     } catch (e) {
-      fs.mkdirSync(config.SITE_DOWNLOAD, { recursive: true });
+      fs.mkdirSync(target, { recursive: true });
     }
-    if (Template.exists(name, to)) return simpleGit(to).pull('origin', config.GIT_BRANCH);
+    const exits = await Template.exists(name, to);
+    if (exits) return simpleGit(to).pull('origin', config.GIT_BRANCH);
     return simpleGit(to).clone(`${config.GIT_REMOTE}/${config.GIT_USER}/${name}.git`, ['-b', config.GIT_BRANCH]);
   }
 
   static pull (name, to = config.SITE_DOWNLOAD) {
-    return simpleGit(to).pull(`${config.GIT_REMOTE}/${config.GIT_USER}/${name}.git`);
+    const target = path.join(to, name, config.TEMPLATE_DIR);
+    return simpleGit(target).pull(`${config.GIT_REMOTE}/${config.GIT_USER}/${name}.git`);
   }
 
   static copy (name, to) {
@@ -28,6 +31,7 @@ class Template {
     return fs.copy(target, to);
   }
 
+  // 模板是否在.site/template/模板存在
   static async exists (name, to = config.SITE_DOWNLOAD) {
     const repoPath = path.join(to, name);
     try {
@@ -41,10 +45,11 @@ class Template {
   static async add (templateName, cwd = process.cwd) {
     const projectName = templateName;
     const toDir = path.join(cwd, projectName);
-    const exists = Template.exists(projectName);
+    const exists = await Template.exists(projectName);
     if (!exists) {
       await Template.clone(projectName);
     }
+    await Template.pull(projectName);
     // 复制clone下来的template到cwd
     return Template.copy(projectName, toDir).then(() => { return toDir; });
   }
