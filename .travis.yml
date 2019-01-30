@@ -1,1 +1,11 @@
+sudo: false
+language: node_js
+os:
+  - linux
+  - osx
+node_js:
+  - 10
 after_success: npm run coverage
+cache:
+  directories:
+    - node_modules

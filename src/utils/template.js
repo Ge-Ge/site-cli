@@ -15,7 +15,8 @@ class Template {
     } catch (e) {
       fs.mkdirSync(config.SITE_DOWNLOAD, { recursive: true });
     }
-    if (Template.exists(name, to)) return simpleGit(to).pull('origin', config.GIT_BRANCH);
+    const exits = await Template.exists(name, to);
+    if (exits) return simpleGit(to).pull('origin', config.GIT_BRANCH);
     return simpleGit(to).clone(`${config.GIT_REMOTE}/${config.GIT_USER}/${name}.git`, ['-b', config.GIT_BRANCH]);
   }
 
@@ -41,7 +42,7 @@ class Template {
   static async add (templateName, cwd = process.cwd) {
     const projectName = templateName;
     const toDir = path.join(cwd, projectName);
-    const exists = Template.exists(projectName);
+    const exists = await Template.exists(projectName);
     if (!exists) {
       await Template.clone(projectName);
     }

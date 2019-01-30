@@ -2,6 +2,7 @@
 const Template = require('./utils/template.js');
 const makeConfig = require('./utils/makeConfig.js');
 const path = require('path');
+const fs = require('fs-extra');
 const defaultConfig = require('../config.js');
 
 class Command {
@@ -28,6 +29,7 @@ class Command {
    * @param cwd 初始化时，模板及配置文件存放路径
    */
   init (templateList = []) {
+    fs.mkdirSync(this.config.SITE_DOWNLOAD, { recursive: true });
     return this._exec(templateList, true);
   }
 
